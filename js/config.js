@@ -35,7 +35,7 @@ window.INFOTEC = {
       local: "Luís Gomes",
       endereco: "Avenida Senhora Santana — Centro, Luís Gomes",
       ddd: "84",
-      numero: "99589893"
+      numero: "999589893"
     }
   ],
 
