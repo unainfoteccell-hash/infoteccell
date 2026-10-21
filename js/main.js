@@ -22,25 +22,88 @@
   }
 
   /* ---------- links do WhatsApp / Instagram ---------- */
-  const wppUrl = kind => kind === 'chat'
-    ? (CFG.WHATSAPP_ATENDIMENTO || CFG.WHATSAPP_COMUNIDADE || '')
-    : (CFG.WHATSAPP_COMUNIDADE || '');
+  /*  data-wpp="community"  -> grupo do WhatsApp (só na seção da comunidade)
+      data-wpp="stores"     -> abre o painel para escolher a loja
+      data-wpp="store:ID"   -> abre o WhatsApp direto daquela loja
+      data-msg="..."        -> mensagem que já vai escrita                   */
+  const LOJAS = CFG.LOJAS || [];
+  const communityUrl = CFG.WHATSAPP_COMUNIDADE || '';
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const waUrl = (l, msg) => `https://wa.me/55${l.ddd}${l.numero}?text=${encodeURIComponent(msg || CFG.MENSAGEM_PADRAO || '')}`;
+  const fone = l => { const n = l.numero, cut = n.length - 4; return `(${l.ddd}) ${n.slice(0, cut)}-${n.slice(cut)}`; };
+  const waIcon = '<svg class="ico"><use href="#i-wa"/></svg>';
+  const pinIcon = '<svg class="ico"><use href="#i-pin"/></svg>';
 
   $$('[data-wpp]').forEach(a => {
-    const url = wppUrl(a.dataset.wpp);
-    if (url) { a.href = url; a.target = '_blank'; a.rel = 'noopener'; }
+    const k = a.dataset.wpp;
+    if (k === 'community' && communityUrl) { a.href = communityUrl; a.target = '_blank'; a.rel = 'noopener'; }
+    else if (k.startsWith('store:')) {
+      const l = LOJAS.find(x => x.id === k.slice(6));
+      if (l) { a.href = waUrl(l, a.dataset.msg); a.target = '_blank'; a.rel = 'noopener'; }
+    }
   });
   document.addEventListener('click', e => {
     const a = e.target.closest('[data-wpp]');
-    if (a && !wppUrl(a.dataset.wpp)) {
-      e.preventDefault();
-      toast('Link do WhatsApp chegando em breve 💬');
-    }
+    if (!a) return;
+    const k = a.dataset.wpp;
+    if (k === 'stores') { e.preventDefault(); openSheet(a.dataset.msg); }
+    else if (k === 'community' && !communityUrl) { e.preventDefault(); toast('Link da comunidade chegando em breve 💬'); }
   });
   $$('[data-link]').forEach(a => {
-    a.href = a.dataset.link === 'una' ? CFG.INSTAGRAM_UNA : CFG.INSTAGRAM_BRASIL;
+    a.href = { una: CFG.INSTAGRAM_UNA, brasil: CFG.INSTAGRAM_BRASIL, luisgomes: CFG.INSTAGRAM_LUISGOMES }[a.dataset.link] || '#';
   });
   $('#year').textContent = new Date().getFullYear();
+
+  /* ---------- seção "Nossas lojas" + rodapé ---------- */
+  $('#shops').innerHTML = LOJAS.map((l, i) => `
+    <article class="shop tilt" data-tilt data-reveal style="--d:${i * .1}s">
+      <div class="shop-head"><span class="pin">${pinIcon}</span><div><small>Loja</small><h3>${esc(l.local)}</h3></div></div>
+      <p class="addr">${esc(l.endereco)}</p>
+      <p class="tel"><svg class="ico"><use href="#i-call"/></svg>${fone(l)}</p>
+      <div class="shop-cta">
+        <a class="btn btn-wa" href="${waUrl(l)}" target="_blank" rel="noopener">${waIcon}<span>Chamar no WhatsApp</span></a>
+        <a class="btn btn-ghost btn-icon" href="tel:+55${l.ddd}${l.numero}" aria-label="Ligar para ${esc(l.nome)}"><svg class="ico"><use href="#i-call"/></svg></a>
+      </div>
+    </article>`).join('');
+  $('#footShops').innerHTML = LOJAS.map(l => `<li><b>${esc(l.local)}</b> · ${esc(l.endereco)} · ${fone(l)}</li>`).join('');
+
+  /* ---------- painel "Falar com qual loja?" ---------- */
+  const sheet = $('#sheet'), sheetList = $('#sheetList');
+  let sheetFocus = null, sheetT;
+  function openSheet(msg) {
+    sheetFocus = document.activeElement;
+    sheetList.innerHTML = LOJAS.map(l => `
+      <a class="sheet-row" href="${waUrl(l, msg)}" target="_blank" rel="noopener">
+        <span class="pin">${pinIcon}</span>
+        <span class="sr-txt"><b>${esc(l.nome)}</b><small>${esc(l.endereco)}</small><em>${fone(l)}</em></span>
+        <span class="wa-dot">${waIcon}</span>
+      </a>`).join('');
+    clearTimeout(sheetT);
+    sheet.hidden = false;
+    document.body.classList.add('sheet-open');
+    requestAnimationFrame(() => requestAnimationFrame(() => sheet.classList.add('open')));
+    $('.sheet-x', sheet).focus();
+  }
+  function closeSheet() {
+    sheet.classList.remove('open');
+    document.body.classList.remove('sheet-open');
+    sheetT = setTimeout(() => { sheet.hidden = true; }, reduce ? 0 : 380);
+    if (sheetFocus && sheetFocus.focus) sheetFocus.focus();
+  }
+  sheet.addEventListener('click', e => {
+    if (e.target.closest('[data-close]')) closeSheet();
+    else if (e.target.closest('.sheet-row')) setTimeout(closeSheet, 250);
+  });
+  addEventListener('keydown', e => {
+    if (sheet.hidden) return;
+    if (e.key === 'Escape') closeSheet();
+    else if (e.key === 'Tab') {
+      const f = $$('button,a[href]', sheet).filter(x => x.offsetParent !== null);
+      const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  });
 
   /* ---------- reveal ao rolar ---------- */
   const io = new IntersectionObserver(entries => {
@@ -279,6 +342,7 @@
     $('#lbTitle').textContent = p.title;
     $('#lbSub').textContent = p.sub;
     $('#lbPrice').textContent = p.price || '';
+    $('#lbBtn').dataset.msg = `Olá! Vi no site da Infoteccell e tenho interesse em: ${p.title} (${p.sub}).`;
     if (anim) { lbFig.classList.remove('swap'); void lbFig.offsetWidth; lbFig.classList.add('swap'); }
   }
   function openLb(i) {
@@ -295,7 +359,7 @@
   $('#lbPrev').addEventListener('click', () => showLb(lbI - 1, true));
   $('#lbNext').addEventListener('click', () => showLb(lbI + 1, true));
   addEventListener('keydown', e => {
-    if (lb.hidden) return;
+    if (lb.hidden || !sheet.hidden) return;
     if (e.key === 'Escape') closeLb();
     else if (e.key === 'ArrowLeft') showLb(lbI - 1, true);
     else if (e.key === 'ArrowRight') showLb(lbI + 1, true);
@@ -344,6 +408,7 @@
       cur = c;
       const p = feat[c];
       $('#cfTitle').textContent = p.title; $('#cfSub').textContent = p.sub;
+      $('#cfBtn').dataset.msg = `Olá! Vi no site da Infoteccell e tenho interesse em: ${p.title} (${p.sub}).`;
       dots2.forEach((d, i) => d.classList.toggle('on', i === c));
     }
   }

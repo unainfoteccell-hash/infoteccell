@@ -2,19 +2,47 @@
    CONFIGURAÇÕES DA INFOTECCELL  —  edite só aqui
    ===================================================== */
 window.INFOTEC = {
-  // 1) Cole aqui o link do grupo/comunidade do WhatsApp quando criar.
-  //    Exemplo: "https://chat.whatsapp.com/XXXXXXXXXXXX"
-  //    Enquanto estiver vazio, os botões avisam "link em breve".
+  // Link do grupo/comunidade do WhatsApp.
+  // Aparece SÓ na seção "Entre na nossa comunidade".
   WHATSAPP_COMUNIDADE: "https://chat.whatsapp.com/EtiRz2dect40zlVHe0QFkR",
 
-  // 2) (Opcional) WhatsApp de atendimento para os botões "Falar com a loja"
-  //    dos produtos. Formato: "https://wa.me/55DDDNUMERO"
-  //    Se ficar vazio, usa o link da comunidade.
-  WHATSAPP_ATENDIMENTO: "https://wa.me/5555999501072?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Infoteccell.",
+  // Mensagem que já vem escrita quando o cliente chama uma loja.
+  MENSAGEM_PADRAO: "Olá! Vim pelo site da Infoteccell.",
 
-  // Instagram das lojas
+  // Lojas — cada uma tem o seu WhatsApp.
+  //   ddd + numero: só dígitos, sem 55 do país (o site já coloca).
+  //   id: não mude (os botões usam).
+  LOJAS: [
+    {
+      id: "cajazeiras",
+      nome: "Infoteccell Cajazeiras",
+      local: "Cajazeiras",
+      endereco: "Rua Juvêncio Carneiro, 291 — Cajazeiras",
+      ddd: "55",
+      numero: "999501072"
+    },
+    {
+      id: "uirauna",
+      nome: "Infoteccell Uiraúna",
+      local: "Uiraúna",
+      endereco: "Rua João Pinto, 12 — Centro, Uiraúna",
+      ddd: "84",
+      numero: "998939583"
+    },
+    {
+      id: "luisgomes",
+      nome: "Infoteccell Luís Gomes",
+      local: "Luís Gomes",
+      endereco: "Avenida Senhora Santana — Centro, Luís Gomes",
+      ddd: "84",
+      numero: "99589893"
+    }
+  ],
+
+  // Instagram
   INSTAGRAM_UNA: "https://www.instagram.com/infoteccell_una/",
   INSTAGRAM_BRASIL: "https://www.instagram.com/infoteccell_brasil/",
+  INSTAGRAM_LUISGOMES: "https://www.instagram.com/infoteccel/",
 
   // Data do sorteio "Show de Prêmios" (fuso de Brasília)
   SORTEIO: "2026-10-31T00:00:00-03:00"
