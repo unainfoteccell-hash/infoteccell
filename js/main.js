@@ -305,6 +305,7 @@
   /* promoções (cards flutuantes) — edite aqui: preço à vista, parcela 12x, specs */
   const PROMOS = [
     { id: 'redmi-17', cat: 'promo', title: 'Redmi 17', specs: '128GB · 4GB RAM', avista: '1.299,99', parcela: '123,47', cores: 'Preto, Gris Titânio e Roxo' },
+    { id: 'galaxy-a07', cat: 'promo', title: 'Samsung Galaxy A07', specs: '128GB · 4GB RAM', avista: '899,00', parcela: '83,34' },
     { id: 'realme-c71', cat: 'promo', title: 'realme C71 NFC', specs: '128GB · 4GB RAM · NFC', avista: '1.099,00', parcela: '104,64', cores: 'Preto, Branco e Verde' },
     { id: 'redmi-note-17', cat: 'promo', title: 'Redmi Note 17', specs: '256GB · 8GB RAM', avista: '1.849,99', parcela: '175,99', cores: 'Preto, Prata e Azul' },
     { id: 'moto-g06', cat: 'promo', title: 'Moto G06', specs: '128GB · 4GB RAM', avista: '900,00', parcela: '85,62', cores: 'Preto, Verde e Roxo' }
@@ -359,7 +360,7 @@
   promoGrid.innerHTML = PROMOS.map((p, i) => `
     <article class="fcard" style="--fd:${(i * -1.7).toFixed(1)}s;--dur:${(6 + (i % 3) * 1.1).toFixed(1)}s">
       <button class="fcard-media tilt" data-tilt data-idx="${i}" aria-label="Ampliar oferta ${p.title}">
-        <img src="${sm(p)}" srcset="${sm(p)} 520w, ${lg(p)} 960w" sizes="(min-width:1100px) 280px,(min-width:760px) 40vw,76vw"
+        <img src="${sm(p)}" srcset="${sm(p)} 520w, ${lg(p)} 960w" sizes="(min-width:1100px) 380px,(min-width:760px) 40vw,76vw"
              alt="Promoção ${p.title}: ${p.price}, ou 12x de R$ ${p.parcela}" width="520" height="650" loading="lazy" decoding="async">
       </button>
       <div class="fcard-cap">
