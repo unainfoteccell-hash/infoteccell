@@ -282,7 +282,7 @@
   /* =========================================================
      PRODUTOS
      ========================================================= */
-  const CATS = { smartphones: 'Smartphones', games: 'Games', capas: 'Capas', eletricos: 'Elétricos' };
+  const CATS = { smartphones: 'Smartphones', games: 'Games', capas: 'Capas', eletricos: 'Elétricos', promo: 'Promoção' };
   const P = [
     { id: 'iphone-13', cat: 'smartphones', title: 'iPhone 13', sub: 'Várias cores disponíveis' },
     { id: 'ps5-slim', cat: 'games', title: 'PS5 Slim Digital', sub: 'Memória 825GB' },
@@ -301,6 +301,14 @@
     { id: 'capas-3', cat: 'capas', title: 'Capas para iPhone', sub: 'Para todos os gostos' }
   ];
   const byId = id => P.find(p => p.id === id);
+
+  /* promoções (cards flutuantes) — edite aqui: preço à vista, parcela 12x, specs */
+  const PROMOS = [
+    { id: 'redmi-17', cat: 'promo', title: 'Redmi 17', specs: '128GB · 4GB RAM', avista: '1.299,99', parcela: '123,47', cores: 'Preto, Gris Titânio e Roxo' },
+    { id: 'realme-c71', cat: 'promo', title: 'realme C71 NFC', specs: '128GB · 4GB RAM · NFC', avista: '1.099,00', parcela: '104,64', cores: 'Preto, Branco e Verde' },
+    { id: 'redmi-note-17', cat: 'promo', title: 'Redmi Note 17', specs: '256GB · 8GB RAM', avista: '1.849,99', parcela: '175,99', cores: 'Preto, Prata e Azul' },
+    { id: 'moto-g06', cat: 'promo', title: 'Moto G06', specs: '128GB · 4GB RAM', avista: '900,00', parcela: '85,62', cores: 'Preto, Verde e Roxo' }
+  ].map(p => ({ ...p, sub: `${p.specs} · 12x de R$ ${p.parcela}`, price: `R$ ${p.avista} à vista` }));
   const sm = p => `assets/img/${p.id}-sm.webp`, lg = p => `assets/img/${p.id}-lg.webp`;
 
   /* ---------- catálogo ---------- */
@@ -346,18 +354,38 @@
   setFilter('todos');
   document.fonts && document.fonts.ready.then(moveThumb);
 
+  /* ---------- ofertas: cards flutuantes ---------- */
+  const promoGrid = $('#promoGrid');
+  promoGrid.innerHTML = PROMOS.map((p, i) => `
+    <article class="fcard" style="--fd:${(i * -1.7).toFixed(1)}s;--dur:${(6 + (i % 3) * 1.1).toFixed(1)}s">
+      <button class="fcard-media tilt" data-tilt data-idx="${i}" aria-label="Ampliar oferta ${p.title}">
+        <img src="${sm(p)}" srcset="${sm(p)} 520w, ${lg(p)} 960w" sizes="(min-width:1100px) 280px,(min-width:760px) 40vw,76vw"
+             alt="Promoção ${p.title}: ${p.price}, ou 12x de R$ ${p.parcela}" width="520" height="650" loading="lazy" decoding="async">
+      </button>
+      <div class="fcard-cap">
+        <div><b>${p.title}</b><small><span>R$ ${p.avista} à vista</span> <span>12x R$ ${p.parcela}</span></small></div>
+        <a class="btn btn-wa btn-sm" data-wpp="online" href="#lojas"
+           data-msg="Olá! Vi no site da Infoteccell e quero o ${p.title} por R$ ${p.avista} à vista ou 12x de R$ ${p.parcela}.">${waIcon}<span>Quero este</span></a>
+      </div>
+    </article>`).join('');
+  promoGrid.addEventListener('click', e => {
+    const c = e.target.closest('.fcard-media');
+    if (c) { lbList = PROMOS; openLb(+c.dataset.idx); }
+  });
+  $$('.fcard', promoGrid).forEach(el => { el.dataset.reveal = ''; io.observe(el); });
+
   /* ---------- lightbox ---------- */
   const lb = $('#lb'), lbImg = $('#lbImg'), lbFig = $('.lb-fig', lb);
-  let lbI = 0, lastFocus = null;
+  let lbI = 0, lastFocus = null, lbList = P;
   function showLb(i, anim) {
-    lbI = (i + list.length) % list.length;
-    const p = list[lbI];
+    lbI = (i + lbList.length) % lbList.length;
+    const p = lbList[lbI];
     lbImg.src = lg(p); lbImg.alt = `${p.title} — ${p.sub}`;
     $('#lbCat').textContent = CATS[p.cat];
     $('#lbTitle').textContent = p.title;
     $('#lbSub').textContent = p.sub;
     $('#lbPrice').textContent = p.price || '';
-    $('#lbBtn').dataset.msg = `Olá! Vi no site da Infoteccell e tenho interesse em: ${p.title} (${p.sub}).`;
+    $('#lbBtn').dataset.msg = `Olá! Vi no site da Infoteccell e tenho interesse em: ${p.title} (${p.sub})${p.price ? ', ' + p.price : ''}.`;
     if (anim) { lbFig.classList.remove('swap'); void lbFig.offsetWidth; lbFig.classList.add('swap'); }
   }
   function openLb(i) {
@@ -369,7 +397,7 @@
     lb.hidden = true; document.body.classList.remove('lb-open');
     lastFocus && lastFocus.focus && lastFocus.focus();
   }
-  grid.addEventListener('click', e => { const c = e.target.closest('.card'); if (c) openLb(+c.dataset.idx); });
+  grid.addEventListener('click', e => { const c = e.target.closest('.card'); if (c) { lbList = list; openLb(+c.dataset.idx); } });
   lb.addEventListener('click', e => { if (e.target.closest('[data-close]')) closeLb(); });
   $('#lbPrev').addEventListener('click', () => showLb(lbI - 1, true));
   $('#lbNext').addEventListener('click', () => showLb(lbI + 1, true));

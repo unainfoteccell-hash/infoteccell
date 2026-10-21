@@ -35,6 +35,7 @@
   <symbol id="i-case" viewBox="0 0 24 24"><rect x="6" y="2.500" width="12" height="19" rx="3" fill="none" stroke="currentColor" stroke-width="1.800"/><rect x="8.500" y="5" width="5" height="5" rx="1.500" fill="none" stroke="currentColor" stroke-width="1.800"/></symbol>
   <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-7-6.100-7-11.500a7 7 0 0 1 14 0C19 14.900 12 21 12 21z" fill="none" stroke="currentColor" stroke-width="1.800" stroke-linejoin="round"/><circle cx="12" cy="9.500" r="2.500" fill="none" stroke="currentColor" stroke-width="1.800"/></symbol>
   <symbol id="i-call" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.500 1.500a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="1.800" stroke-linejoin="round"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 24 24"><path d="M3 12.500V4a1 1 0 0 1 1-1h8.500a1 1 0 0 1 .7.300l8 8a1 1 0 0 1 0 1.400l-8.500 8.500a1 1 0 0 1-1.400 0l-8-8a1 1 0 0 1-.3-.7z" fill="none" stroke="currentColor" stroke-width="1.800" stroke-linejoin="round"/><circle cx="7.500" cy="7.500" r="1.500" fill="currentColor"/></symbol>
   <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
   <symbol id="i-left" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
@@ -53,6 +54,7 @@
   </a>
   <ul class="nav-links">
     <li><a href="#inicio" data-spy="inicio">Início</a></li>
+    <li><a href="#ofertas" data-spy="ofertas">Ofertas</a></li>
     <li><a href="#catalogo" data-spy="catalogo">Produtos</a></li>
     <li><a href="#premios" data-spy="premios">Prêmios</a></li>
     <li><a href="#eletricos" data-spy="eletricos">Elétricos</a></li>
@@ -67,7 +69,7 @@
 <!-- Dock estilo app (celular) -->
 <nav class="dock" aria-label="Atalhos">
   <a href="#inicio" data-spy="inicio"><svg class="ico"><use href="#i-home"/></svg><span>Início</span></a>
-  <a href="#catalogo" data-spy="catalogo"><svg class="ico"><use href="#i-bag"/></svg><span>Produtos</span></a>
+  <a href="#ofertas" data-spy="ofertas"><svg class="ico"><use href="#i-tag"/></svg><span>Ofertas</span></a>
   <a href="#lojas" class="dock-main" data-wpp="stores" aria-label="Falar no WhatsApp"><svg class="ico"><use href="#i-wa"/></svg></a>
   <a href="#premios" data-spy="premios"><svg class="ico"><use href="#i-gift"/></svg><span>Prêmios</span></a>
   <a href="#lojas" data-spy="lojas"><svg class="ico"><use href="#i-store"/></svg><span>Lojas</span></a>
@@ -129,6 +131,20 @@
     <span>Smartphones</span><span>iPhone</span><span>PlayStation 5</span><span>Capas</span><span>Bikes elétricas</span><span>Scooters</span><span>Assistência</span><span>Peças</span><span>Acessórios</span>
   </div>
 </div></div>
+
+<!-- ============ OFERTAS (cards flutuantes) ============ -->
+<section class="section promo" id="ofertas">
+  <div class="promo-glow" aria-hidden="true"><i></i><i></i></div>
+  <div class="wrap">
+    <div class="head center" data-reveal>
+      <span class="eyebrow">Promoções</span>
+      <h2>Celulares em <span class="grad">oferta.</span></h2>
+      <p class="lead">Parcele em até 12x e ainda ganhe capinha, película e fone de ouvido.</p>
+    </div>
+    <div class="fgrid" id="promoGrid"></div>
+    <p class="fine">Valores e brindes conforme as artes divulgadas pela loja; sujeitos a estoque e alteração. Toque no card para ampliar.</p>
+  </div>
+</section>
 
 <!-- ============ CATEGORIAS ============ -->
 <section class="section" id="categorias">
@@ -278,7 +294,7 @@
           <div class="pp"><small>ou 12x de</small><b>R$ <span data-count="142.69" data-dec="2">142,69</span></b></div>
         </li>
         <li class="price tilt" data-tilt data-reveal style="--d:.19s">
-          <div><h3>Redmi 17</h3><p>128GB · 4GB RAM · 4G</p><small>R$ 1.300,00 à vista</small></div>
+          <div><h3>Redmi 17</h3><p>128GB · 4GB RAM · 4G</p><small>R$ 1.299,99 à vista</small></div>
           <div class="pp"><small>ou 12x de</small><b>R$ <span data-count="123.47" data-dec="2">123,47</span></b></div>
         </li>
       </ul>
