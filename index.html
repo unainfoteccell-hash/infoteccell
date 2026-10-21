@@ -183,7 +183,8 @@
     <div class="cf" id="cf" data-reveal aria-roledescription="carrossel" aria-label="Destaques da loja"></div>
     <div class="cf-info" id="cfInfo" aria-live="polite">
       <h3 id="cfTitle"></h3><p id="cfSub"></p>
-      <a class="btn btn-primary" id="cfBtn" data-wpp="stores" href="#lojas"><svg class="ico"><use href="#i-wa"/></svg><span>Falar com a loja</span></a>
+      <a class="btn btn-primary" id="cfBtn" data-wpp="online" href="#lojas"><svg class="ico"><use href="#i-wa"/></svg><span>Comprar pelo WhatsApp</span></a>
+      <a class="alt-link" data-wpp="stores" href="#lojas">ou fale com uma loja</a>
     </div>
     <div class="cf-ctrl">
       <button class="round" id="cfPrev" aria-label="Anterior"><svg class="ico"><use href="#i-left"/></svg></button>
@@ -328,6 +329,7 @@
       <h2>Escolha a loja e <span class="grad">chame no WhatsApp.</span></h2>
       <p class="lead">São 3 lojas prontas para te atender. Toque no botão da mais perto de você.</p>
     </div>
+    <div class="online-card" id="online" data-reveal></div>
     <div class="shops" id="shops"></div>
   </div>
 </section>
@@ -445,7 +447,8 @@
       <h3 id="lbTitle"></h3>
       <p id="lbSub"></p>
       <b class="lb-price" id="lbPrice"></b>
-      <a class="btn btn-wa" id="lbBtn" data-wpp="stores" href="#lojas"><svg class="ico"><use href="#i-wa"/></svg><span>Falar com a loja</span></a>
+      <a class="btn btn-wa" id="lbBtn" data-wpp="online" href="#lojas"><svg class="ico"><use href="#i-wa"/></svg><span>Comprar pelo WhatsApp</span></a>
+      <a class="alt-link" data-wpp="stores" href="#lojas">ou fale com uma loja</a>
     </div>
   </div>
 </div>
@@ -457,8 +460,8 @@
     <span class="grab" aria-hidden="true"></span>
     <button class="sheet-x round" data-close aria-label="Fechar"><svg class="ico"><use href="#i-x"/></svg></button>
     <span class="eyebrow">WhatsApp</span>
-    <h3 id="sheetTitle">Falar com qual loja?</h3>
-    <p class="sheet-sub">Escolha a mais perto de você.</p>
+    <h3 id="sheetTitle">Falar com quem?</h3>
+    <p class="sheet-sub">Compre online ou chame a loja mais perto de você.</p>
     <div class="sheet-list" id="sheetList"></div>
   </div>
 </div>

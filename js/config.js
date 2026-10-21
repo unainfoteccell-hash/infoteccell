@@ -9,6 +9,14 @@ window.INFOTEC = {
   // Mensagem que já vem escrita quando o cliente chama uma loja.
   MENSAGEM_PADRAO: "Olá! Vim pelo site da Infoteccell.",
 
+  // Vendas online (WhatsApp exclusivo para compras pelo site)
+  VENDAS_ONLINE: {
+    nome: "Vendas online",
+    ddd: "55",
+    numero: "999501072",
+    mensagem: "Olá! Quero comprar pelo site da Infoteccell."
+  },
+
   // Lojas — cada uma tem o seu WhatsApp.
   //   ddd + numero: só dígitos, sem 55 do país (o site já coloca).
   //   id: não mude (os botões usam).

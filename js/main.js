@@ -25,8 +25,10 @@
   /*  data-wpp="community"  -> grupo do WhatsApp (só na seção da comunidade)
       data-wpp="stores"     -> abre o painel para escolher a loja
       data-wpp="store:ID"   -> abre o WhatsApp direto daquela loja
+      data-wpp="online"     -> abre o WhatsApp das vendas online
       data-msg="..."        -> mensagem que já vai escrita                   */
   const LOJAS = CFG.LOJAS || [];
+  const ONLINE = CFG.VENDAS_ONLINE || null;
   const communityUrl = CFG.WHATSAPP_COMUNIDADE || '';
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const waUrl = (l, msg) => `https://wa.me/55${l.ddd}${l.numero}?text=${encodeURIComponent(msg || CFG.MENSAGEM_PADRAO || '')}`;
@@ -47,6 +49,7 @@
     if (!a) return;
     const k = a.dataset.wpp;
     if (k === 'stores') { e.preventDefault(); openSheet(a.dataset.msg); }
+    else if (k === 'online' && ONLINE) { e.preventDefault(); window.open(waUrl(ONLINE, a.dataset.msg || ONLINE.mensagem), '_blank', 'noopener'); }
     else if (k === 'community' && !communityUrl) { e.preventDefault(); toast('Link da comunidade chegando em breve 💬'); }
   });
   $$('[data-link]').forEach(a => {
@@ -65,14 +68,26 @@
         <a class="btn btn-ghost btn-icon" href="tel:+55${l.ddd}${l.numero}" aria-label="Ligar para ${esc(l.nome)}"><svg class="ico"><use href="#i-call"/></svg></a>
       </div>
     </article>`).join('');
-  $('#footShops').innerHTML = LOJAS.map(l => `<li><b>${esc(l.local)}</b> · ${esc(l.endereco)} · ${fone(l)}</li>`).join('');
+  if (ONLINE) {
+    $('#online').innerHTML = `
+      <span class="pin">${waIcon}</span>
+      <div class="online-txt"><small>Vendas online</small><h3>Compre sem sair de casa</h3><p>Escolha o produto e finalize direto pelo WhatsApp.</p></div>
+      <a class="btn btn-white btn-lg" href="${waUrl(ONLINE, ONLINE.mensagem)}" target="_blank" rel="noopener">${waIcon}<span>Comprar online</span></a>`;
+  } else $('#online').remove();
+  $('#footShops').innerHTML = (ONLINE ? `<li><b>Vendas online</b> · ${fone(ONLINE)}</li>` : '') + LOJAS.map(l => `<li><b>${esc(l.local)}</b> · ${esc(l.endereco)} · ${fone(l)}</li>`).join('');
 
   /* ---------- painel "Falar com qual loja?" ---------- */
   const sheet = $('#sheet'), sheetList = $('#sheetList');
   let sheetFocus = null, sheetT;
   function openSheet(msg) {
     sheetFocus = document.activeElement;
-    sheetList.innerHTML = LOJAS.map(l => `
+    const onlineRow = ONLINE ? `
+      <a class="sheet-row online" href="${waUrl(ONLINE, msg || ONLINE.mensagem)}" target="_blank" rel="noopener">
+        <span class="pin">${waIcon}</span>
+        <span class="sr-txt"><b>Vendas online</b><small>Compre sem sair de casa</small><em>${fone(ONLINE)}</em></span>
+        <span class="wa-dot">${waIcon}</span>
+      </a>` : '';
+    sheetList.innerHTML = onlineRow + LOJAS.map(l => `
       <a class="sheet-row" href="${waUrl(l, msg)}" target="_blank" rel="noopener">
         <span class="pin">${pinIcon}</span>
         <span class="sr-txt"><b>${esc(l.nome)}</b><small>${esc(l.endereco)}</small><em>${fone(l)}</em></span>
