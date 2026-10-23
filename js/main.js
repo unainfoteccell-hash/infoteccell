@@ -308,7 +308,8 @@
     { id: 'galaxy-a07', cat: 'promo', title: 'Samsung Galaxy A07', specs: '128GB · 4GB RAM', avista: '899,00', parcela: '83,34' },
     { id: 'realme-c71', cat: 'promo', title: 'realme C71 NFC', specs: '128GB · 4GB RAM · NFC', avista: '1.099,00', parcela: '104,64', cores: 'Preto, Branco e Verde' },
     { id: 'redmi-note-17', cat: 'promo', title: 'Redmi Note 17', specs: '256GB · 8GB RAM', avista: '1.849,99', parcela: '175,99', cores: 'Preto, Prata e Azul' },
-    { id: 'moto-g06', cat: 'promo', title: 'Moto G06', specs: '128GB · 4GB RAM', avista: '900,00', parcela: '85,62', cores: 'Preto, Verde e Roxo' }
+    { id: 'moto-g06', cat: 'promo', title: 'Moto G06', specs: '128GB · 4GB RAM', avista: '900,00', parcela: '85,62', cores: 'Preto, Verde e Roxo' },
+    { id: 'oek-m7', cat: 'promo', title: 'OEK M7', specs: 'Motinha elétrica · 30 à 35km · 32km/h', avista: '8.199,99', parcela: '780,06', cores: 'Preto e Vermelho' }
   ].map(p => ({ ...p, sub: `${p.specs} · 12x de R$ ${p.parcela}`, price: `R$ ${p.avista} à vista` }));
   const sm = p => `assets/img/${p.id}-sm.webp`, lg = p => `assets/img/${p.id}-lg.webp`;
 
