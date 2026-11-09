@@ -17,3 +17,11 @@ Fotos: `assets/img/` (nome-lg.webp = grande 1000px, nome-sm.webp = miniatura 520
 ## Publicar
 Cada push na branch `main` do GitHub publica sozinho na Vercel.
 Commits devem sair com a conta dona do projeto na Vercel (unainfoteccell-hash).
+
+## Estúdio de Promoções (admin.html)
+Abra `https://infoteccell.vercel.app/admin.html` (não aparece no site para o público).
+1. Preencha nome, preço, especificações, cores e brindes e anexe a foto do produto (o fundo é removido no próprio aparelho).
+2. Escolha **Feed (1080x1350)** ou **Story (1080x1920)** e baixe o PNG. No celular, "Compartilhar / Postar" abre o Instagram.
+3. **Publicar no site** adiciona a promoção na seção "Ofertas" (precisa da chave do GitHub, configurada uma vez no próprio estúdio).
+
+As promoções do site ficam em `data/promos.js` (o estúdio atualiza esse arquivo sozinho).

@@ -302,16 +302,14 @@
   ];
   const byId = id => P.find(p => p.id === id);
 
-  /* promoções (cards flutuantes) — edite aqui: preço à vista, parcela 12x, specs */
-  const PROMOS = [
-    { id: 'redmi-17', cat: 'promo', title: 'Redmi 17', specs: '128GB · 4GB RAM', avista: '1.299,99', parcela: '123,47', cores: 'Preto, Gris Titânio e Roxo' },
-    { id: 'galaxy-a07', cat: 'promo', title: 'Samsung Galaxy A07', specs: '128GB · 4GB RAM', avista: '899,00', parcela: '83,34' },
-    { id: 'realme-c71', cat: 'promo', title: 'realme C71 NFC', specs: '128GB · 4GB RAM · NFC', avista: '1.099,00', parcela: '104,64', cores: 'Preto, Branco e Verde' },
-    { id: 'redmi-note-17', cat: 'promo', title: 'Redmi Note 17', specs: '256GB · 8GB RAM', avista: '1.849,99', parcela: '175,99', cores: 'Preto, Prata e Azul' },
-    { id: 'moto-g06', cat: 'promo', title: 'Moto G06', specs: '128GB · 4GB RAM', avista: '900,00', parcela: '85,62', cores: 'Preto, Verde e Roxo' },
-    { id: 'oek-m7', cat: 'promo', title: 'OEK M7', specs: 'Motinha elétrica · 30 à 35km · 32km/h', avista: '8.199,99', parcela: '780,06', cores: 'Preto e Vermelho' }
-  ].map(p => ({ ...p, sub: `${p.specs} · 12x de R$ ${p.parcela}`, price: `R$ ${p.avista} à vista` }));
-  const sm = p => `assets/img/${p.id}-sm.webp`, lg = p => `assets/img/${p.id}-lg.webp`;
+  /* promoções (cards flutuantes) — vêm de data/promos.js (gerado pelo Estúdio: admin.html) */
+  const PROMOS = (window.PROMOS_DATA || []).filter(p => p && p.ativo !== false).map(p => {
+    const n = p.parcelas || 12;
+    return { ...p, cat: 'promo', parcelas: n, sub: `${p.specs ? p.specs + ' · ' : ''}${n}x de R$ ${p.parcela}`, price: `R$ ${p.avista} à vista` };
+  });
+  const imgBase = p => p.img || `assets/img/${p.id}`;
+  const ver = p => (p.v ? '?v=' + p.v : '');
+  const sm = p => `${imgBase(p)}-sm.${p.ext || 'webp'}${ver(p)}`, lg = p => `${imgBase(p)}-lg.${p.ext || 'webp'}${ver(p)}`;
 
   /* ---------- catálogo ---------- */
   const grid = $('#grid'), seg = $('#seg'), thumb = $('.seg-thumb', seg);
@@ -358,16 +356,17 @@
 
   /* ---------- ofertas: cards flutuantes ---------- */
   const promoGrid = $('#promoGrid');
+  if (!PROMOS.length) { $('#ofertas').hidden = true; $$('[data-spy="ofertas"]').forEach(a => { (a.closest('li') || a).hidden = true; }); }
   promoGrid.innerHTML = PROMOS.map((p, i) => `
     <article class="fcard" style="--fd:${(i * -1.7).toFixed(1)}s;--dur:${(6 + (i % 3) * 1.1).toFixed(1)}s">
       <button class="fcard-media tilt" data-tilt data-idx="${i}" aria-label="Ampliar oferta ${p.title}">
         <img src="${sm(p)}" srcset="${sm(p)} 520w, ${lg(p)} 960w" sizes="(min-width:1100px) 380px,(min-width:760px) 40vw,76vw"
-             alt="Promoção ${p.title}: ${p.price}, ou 12x de R$ ${p.parcela}" width="520" height="650" loading="lazy" decoding="async">
+             alt="Promoção ${p.title}: ${p.price}, ou ${p.parcelas}x de R$ ${p.parcela}" width="520" height="650" loading="lazy" decoding="async">
       </button>
       <div class="fcard-cap">
-        <div><b>${p.title}</b><small><span>R$ ${p.avista} à vista</span> <span>12x R$ ${p.parcela}</span></small></div>
+        <div><b>${p.title}</b><small><span>R$ ${p.avista} à vista</span> <span>${p.parcelas}x R$ ${p.parcela}</span></small></div>
         <a class="btn btn-wa btn-sm" data-wpp="online" href="#lojas"
-           data-msg="Olá! Vi no site da Infoteccell e quero o ${p.title} por R$ ${p.avista} à vista ou 12x de R$ ${p.parcela}.">${waIcon}<span>Quero este</span></a>
+           data-msg="Olá! Vi no site da Infoteccell e quero o ${p.title} por R$ ${p.avista} à vista ou ${p.parcelas}x de R$ ${p.parcela}.">${waIcon}<span>Quero este</span></a>
       </div>
     </article>`).join('');
   promoGrid.addEventListener('click', e => {
