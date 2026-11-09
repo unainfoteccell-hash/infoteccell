@@ -147,3 +147,6 @@ input[type=range]{width:100%;accent-color:var(--cyan)}
 .fab-prev[hidden]{display:none}
 @media(min-width:980px){.fab-prev{display:none!important}}
 @media(max-width:979px){.stage canvas{max-height:56vh}.stage.story canvas{height:min(56vh,560px)}.top .word{display:none}}
+
+/* evita que os botões fiquem escondidos sob o cabeçalho fixo */
+.preview .btn,.preview .seg,.form .card{scroll-margin-top:92px}

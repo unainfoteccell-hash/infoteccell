@@ -401,61 +401,44 @@
   });
 
   /* =========================================================
-     PUBLICAR NO SITE (GitHub)
+     PUBLICAR NO SITE (função /api/publicar, protegida por senha)
      ========================================================= */
-  const LS = { token: 'infoteccell-gh-token', repo: 'infoteccell-gh-repo' };
-  const lsGet = k => { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } };
-  const lsSet = (k, v) => { try { v ? localStorage.setItem(k, v) : localStorage.removeItem(k); } catch (e) { /* ignora */ } };
-  $('#ghToken').value = lsGet(LS.token); $('#ghRepo').value = lsGet(LS.repo) || $('#ghRepo').value;
-  let sessionToken = '';
-  const token = () => ($('#ghToken').value || sessionToken || '').trim();
-  const repo = () => ($('#ghRepo').value || '').trim();
-  const persistGh = () => { sessionToken = $('#ghToken').value.trim(); lsSet(LS.token, $('#ghRemember').checked ? sessionToken : ''); lsSet(LS.repo, repo()); };
-  $('#ghToken').addEventListener('change', persistGh); $('#ghRepo').addEventListener('change', persistGh); $('#ghRemember').addEventListener('change', persistGh);
-  $('#ghForget').addEventListener('click', () => { $('#ghToken').value = ''; sessionToken = ''; lsSet(LS.token, ''); $('#ghMsg').textContent = 'Chave removida deste navegador.'; });
+  const LS_PWD = 'infoteccell-studio-senha';
+  const store = (k, v, persist) => { try { const s = persist ? localStorage : sessionStorage; v ? s.setItem(k, v) : (localStorage.removeItem(k), sessionStorage.removeItem(k)); } catch (e) { /* ignora */ } };
+  const readStore = k => { try { return localStorage.getItem(k) || sessionStorage.getItem(k) || ''; } catch (e) { return ''; } };
+  $('#senha').value = readStore(LS_PWD);
+  $('#senhaLembrar').checked = !!(() => { try { return localStorage.getItem(LS_PWD); } catch (e) { return ''; } })();
+  const senha = () => $('#senha').value;
+  const guardarSenha = () => { store(LS_PWD, senha(), $('#senhaLembrar').checked); };
+  $('#senha').addEventListener('change', guardarSenha); $('#senhaLembrar').addEventListener('change', guardarSenha);
+  $('#senhaEsquecer').addEventListener('click', () => { $('#senha').value = ''; store(LS_PWD, ''); $('#senhaMsg').textContent = 'Senha removida deste navegador.'; });
 
-  async function gh(path, opts = {}) {
-    const r = await fetch(`https://api.github.com/repos/${repo()}${path}`, {
-      ...opts, headers: { Authorization: 'Bearer ' + token(), Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28', ...(opts.headers || {}) }
-    });
-    if (r.status === 401) throw new Error('Chave do GitHub inválida ou vencida. Gere outra em “Conexão para publicar”.');
-    if (r.status === 403) throw new Error('A chave não tem permissão (precisa de “Contents: Read and write” neste repositório).');
-    return r;
+  async function api(acao, dados) {
+    let r;
+    try { r = await fetch('/api/publicar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ senha: senha(), acao, ...(dados || {}) }) }); }
+    catch (e) { throw new Error('Sem conexão com o servidor. Confira a internet.'); }
+    let jn = null; try { jn = await r.json(); } catch (e) { /* sem corpo */ }
+    if (!jn) throw new Error(r.status === 404 ? 'A função de publicação não foi encontrada. Abra o estúdio pelo endereço do site (https://infoteccell.vercel.app/admin.html).' : 'O servidor não respondeu direito (código ' + r.status + ').');
+    if (!r.ok || !jn.ok) throw new Error(jn.erro || ('Erro ' + r.status));
+    return jn;
   }
-  async function ghGetFile(path) {
-    const r = await gh(`/contents/${path}`); if (r.status === 404) return null;
-    if (!r.ok) throw new Error('GitHub respondeu ' + r.status); return r.json();
-  }
-  async function ghPutFile(path, b64, message, sha) {
-    const r = await gh(`/contents/${path}`, { method: 'PUT', body: JSON.stringify({ message, content: b64, ...(sha ? { sha } : {}) }) });
-    if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error(`Falha ao enviar ${path}: ${j.message || r.status}`); }
-    return r.json();
-  }
-  $('#ghTest').addEventListener('click', async () => {
-    persistGh(); const m = $('#ghMsg');
-    if (!token()) { m.textContent = 'Cole a chave primeiro.'; return; }
+  $('#senhaTestar').addEventListener('click', async () => {
+    guardarSenha(); const m = $('#senhaMsg');
+    if (!senha()) { m.textContent = 'Digite a senha primeiro.'; return; }
     m.textContent = 'Testando…';
-    try {
-      const r = await gh(''); if (!r.ok) throw new Error(r.status === 404 ? 'Repositório não encontrado (confira o nome e as permissões da chave).' : 'GitHub respondeu ' + r.status);
-      const j = await r.json(); m.textContent = j.permissions && j.permissions.push ? `✔ Conectado a ${j.full_name}. Pode publicar!` : '⚠️ Conectou, mas a chave só tem leitura. Dê “Contents: Read and write”.';
-    } catch (e) { m.textContent = '✖ ' + e.message; }
+    try { const rs = await api('testar'); m.textContent = '✔ Senha correta' + (rs.quem && rs.quem !== 'equipe' ? ' (olá, ' + rs.quem + ')' : '') + ' e conexão com o site ok. Pode publicar!'; }
+    catch (e) { m.textContent = '✖ ' + e.message; }
   });
+  function pedirSenha(msg) { const d = $('#pubset'); d.open = true; d.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => $('#senha').focus({ preventScroll: true }), 400); toast(msg, true); }
 
-  const parsePromos = text => { const m = text.match(/window\.PROMOS_DATA\s*=\s*(\[[\s\S]*\])\s*;?\s*$/); if (!m) throw new Error('Formato inesperado em data/promos.js'); return JSON.parse(m[1]); };
-  const buildPromos = arr => '/* Gerado pelo Estúdio de Promoções (admin.html). Pode editar à mão se precisar. */\nwindow.PROMOS_DATA = ' + JSON.stringify(arr, null, 2) + ';\n';
-  async function readRemotePromos() {
-    const f = await ghGetFile('data/promos.js'); if (!f) return { list: [], sha: null };
-    return { list: parsePromos(b64ToStr(f.content)), sha: f.sha };
-  }
   async function encodeArt(form) {
-    const feed = await makeCanvas('feed', form), out = {};
-    const type = 'image/webp'; let ext = 'webp';
+    const feed = await makeCanvas('feed', form), out = {}; let ext = 'webp';
     for (const [k, w] of [['lg', 960], ['sm', 520]]) {
       const c = document.createElement('canvas'); c.width = w; c.height = Math.round(w * 1350 / 1080);
       const x = c.getContext('2d'); x.imageSmoothingQuality = 'high'; x.drawImage(feed, 0, 0, c.width, c.height);
-      let b = await canvasToBlob(c, type, .84);
-      if (b.type !== 'image/webp') { b = await canvasToBlob(c, 'image/jpeg', .86); ext = 'jpg'; }
-      out[k] = b;
+      let bl = await canvasToBlob(c, 'image/webp', .84);
+      if (bl.type !== 'image/webp') { bl = await canvasToBlob(c, 'image/jpeg', .86); ext = 'jpg'; }
+      out[k] = bl;
     }
     return { ...out, ext };
   }
@@ -463,8 +446,8 @@
   let publishing = false;
   async function publishCurrent() {
     if (publishing) return;
-    persistGh();
-    if (!token()) { $('#pubset').open = true; $('#pubset').scrollIntoView({ behavior: 'smooth' }); toast('Primeiro cole a chave do GitHub em “Conexão para publicar”.', true); return; }
+    guardarSenha();
+    if (!senha()) { pedirSenha('Digite a senha em “Acesso para publicar no site”.'); return; }
     const a = Arte.parseMoney(S.avista), p = Arte.parseMoney(S.parcela);
     if (!title(S) || title(S) === 'Promoção') { toast('Preencha o nome do produto.', true); return; }
     if (isNaN(a) || isNaN(p)) { toast('Preencha o preço à vista e o valor da parcela.', true); return; }
@@ -474,21 +457,12 @@
     try {
       toast('Gerando as imagens…');
       const rec = await saveCurrent(true);
-      const form = renderForm();
-      const art = await encodeArt(form);
-      S.siteId = S.siteId || `${slug(title(S))}-${uid()}`; rec.siteId = S.siteId; await dbPut({ ...rec, siteId: S.siteId });
-      const base = `assets/img/promo-${S.siteId}`;
-      toast('Enviando para o GitHub…');
-      const msg = `Promoção: ${title(S)}`;
-      for (const k of ['lg', 'sm']) {
-        const path = `${base}-${k}.${art.ext}`, ex = await ghGetFile(path);
-        await ghPutFile(path, await blobToB64(art[k]), msg, ex && ex.sha);
-      }
-      const { list, sha } = await readRemotePromos();
-      const entry = { id: S.siteId, title: title(S), specs: S.resumo || '', avista: Arte.money(a).text, parcela: Arte.money(p).text, parcelas: S.parcelas, img: base, ext: art.ext, v: Date.now(), ativo: true, studio: true };
-      const i = list.findIndex(x => x.id === S.siteId); if (i >= 0) list[i] = entry; else list.unshift(entry);
-      await ghPutFile('data/promos.js', strToB64(buildPromos(list)), msg, sha);
-      window.PROMOS_DATA = list; listSaved(); listPublished();
+      const art = await encodeArt(renderForm());
+      S.siteId = S.siteId || `${slug(title(S))}-${uid()}`; await dbPut({ ...rec, siteId: S.siteId });
+      toast('Publicando…');
+      const entry = { id: S.siteId, title: title(S), specs: S.resumo || '', avista: Arte.money(a).text, parcela: Arte.money(p).text, parcelas: S.parcelas, ext: art.ext };
+      const rs = await api('publicar', { entry, imagens: { lg: await blobToB64(art.lg), sm: await blobToB64(art.sm) } });
+      window.PROMOS_DATA = rs.lista; listSaved(); listPublished();
       toast('✅ Publicado! O site atualiza em cerca de 1 minuto.');
     } catch (e) { console.error(e); toast(e.message || 'Falha ao publicar.', true); }
     finally { publishing = false; $('#pubBtn').disabled = false; }
@@ -505,15 +479,12 @@
       </div>`).join('') : '<p class="empty">Nenhuma promoção publicada no site.</p>';
   }
   $('#published').addEventListener('click', async e => {
-    const b = e.target.closest('[data-a="rm"]'); if (!b) return;
-    const id = b.closest('.pcard').dataset.id, p = (window.PROMOS_DATA || []).find(x => x.id === id);
+    const bt = e.target.closest('[data-a="rm"]'); if (!bt) return;
+    const id = bt.closest('.pcard').dataset.id, p = (window.PROMOS_DATA || []).find(x => x.id === id);
     if (!confirm(`Remover “${p ? p.title : id}” do site?`)) return;
-    persistGh(); if (!token()) { $('#pubset').open = true; toast('Cole a chave do GitHub primeiro.', true); return; }
-    try {
-      const { list, sha } = await readRemotePromos();
-      await ghPutFile('data/promos.js', strToB64(buildPromos(list.filter(x => x.id !== id))), `Remove promoção: ${p ? p.title : id}`, sha);
-      window.PROMOS_DATA = list.filter(x => x.id !== id); listPublished(); listSaved(); toast('Removida do site ✔ (some em ~1 minuto).');
-    } catch (err) { toast(err.message, true); }
+    guardarSenha(); if (!senha()) { pedirSenha('Digite a senha primeiro.'); return; }
+    try { const rs = await api('remover', { id }); window.PROMOS_DATA = rs.lista; listPublished(); listSaved(); toast('Removida do site ✔ (some em ~1 minuto).'); }
+    catch (err) { toast(err.message, true); }
   });
 
   /* =========================================================

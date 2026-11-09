@@ -19,9 +19,15 @@ Cada push na branch `main` do GitHub publica sozinho na Vercel.
 Commits devem sair com a conta dona do projeto na Vercel (unainfoteccell-hash).
 
 ## Estúdio de Promoções (admin.html)
-Abra `https://infoteccell.vercel.app/admin.html` (não aparece no site para o público).
+Abra https://infoteccell.vercel.app/admin.html (não aparece no site para o público).
 1. Preencha nome, preço, especificações, cores e brindes e anexe a foto do produto (o fundo é removido no próprio aparelho).
-2. Escolha **Feed (1080x1350)** ou **Story (1080x1920)** e baixe o PNG. No celular, "Compartilhar / Postar" abre o Instagram.
-3. **Publicar no site** adiciona a promoção na seção "Ofertas" (precisa da chave do GitHub, configurada uma vez no próprio estúdio).
+2. Escolha Feed (1080x1350) ou Story (1080x1920) e baixe o PNG. No celular, "Compartilhar / Postar" abre o Instagram.
+3. "Publicar no site" pede a SENHA da equipe e coloca a promoção na seção "Ofertas".
 
-As promoções do site ficam em `data/promos.js` (o estúdio atualiza esse arquivo sozinho).
+### Configuração na Vercel (uma vez)
+Project → Settings → Environment Variables:
+- ADMIN_SENHA  = senha da equipe. Para uma senha por pessoa: ana:senhaDaAna,joao:senhaDoJoao (sem vírgula/dois-pontos dentro da senha)
+- GITHUB_TOKEN = chave do GitHub (fine-grained, só o repositório infoteccell, Contents: Read and write)
+Depois faça um novo deploy (Deployments → ... → Redeploy). A chave fica só na Vercel, nunca no navegador.
+
+As promoções do site ficam em data/promos.js (a função api/publicar.js atualiza esse arquivo).

@@ -1,0 +1,5 @@
+{
+  "functions": {
+    "api/publicar.js": { "maxDuration": 30 }
+  }
+}

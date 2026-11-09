@@ -168,26 +168,19 @@
     <div class="cards" id="published"></div>
 
     <details class="pubset" id="pubset">
-      <summary>⚙️ Conexão para publicar no site (GitHub)</summary>
+      <summary>🔒 Acesso para publicar no site</summary>
       <div class="pubset-in">
-        <p>Para o botão <b>Publicar no site</b> funcionar, o estúdio precisa de uma <b>chave de acesso</b> do GitHub (só uma vez). Ela fica salva só neste navegador.</p>
-        <ol class="steps">
-          <li>Entre no GitHub com a conta <b>unainfoteccell-hash</b> e abra <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">Settings → Fine-grained tokens → Generate new token</a>.</li>
-          <li>Em <b>Repository access</b>, escolha <i>Only select repositories</i> → <b>infoteccell</b>.</li>
-          <li>Em <b>Permissions → Repository permissions</b>, coloque <b>Contents: Read and write</b>.</li>
-          <li>Gere o token, copie e cole abaixo.</li>
-        </ol>
+        <p>Para <b>publicar</b> ou <b>remover</b> promoções do site, digite a <b>senha da equipe</b>. Baixar as artes não precisa de senha.</p>
         <div class="grid2">
-          <label>Chave (token)<input id="ghToken" type="password" placeholder="github_pat_…" autocomplete="off"></label>
-          <label>Repositório<input id="ghRepo" value="unainfoteccell-hash/infoteccell" autocomplete="off"></label>
+          <label>Senha<input id="senha" type="password" placeholder="Senha da equipe" autocomplete="current-password"></label>
+          <label class="check" style="align-self:end;margin-bottom:10px"><input type="checkbox" id="senhaLembrar"> Lembrar neste aparelho</label>
         </div>
         <div class="btn-row">
-          <label class="check"><input type="checkbox" id="ghRemember" checked> Lembrar neste navegador</label>
-          <button class="btn ghost sm" id="ghTest" type="button">Testar conexão</button>
-          <button class="btn ghost sm" id="ghForget" type="button">Esquecer chave</button>
+          <button class="btn ghost sm" id="senhaTestar" type="button">Testar senha</button>
+          <button class="btn ghost sm" id="senhaEsquecer" type="button">Esquecer senha</button>
         </div>
-        <p class="mini" id="ghMsg"></p>
-        <p class="mini">⚠️ Use só em um computador/celular seu. Quem tiver essa chave consegue alterar o site.</p>
+        <p class="mini" id="senhaMsg"></p>
+        <p class="mini">Não tem a senha? Peça ao responsável pelo site. Use “Lembrar” só em aparelho seu.</p>
       </div>
     </details>
   </div>
