@@ -1,19 +1,6 @@
 /* Gerado pelo Estúdio de Promoções (admin.html). Pode editar à mão se precisar. */
 window.PROMOS_DATA = [
   {
-    "id": "oek-tank-mwjdjjz208f4",
-    "title": "OEK TANK",
-    "specs": "1000W · 32 km/h · 48V 23Ah · 40–55 km · suporta 120 kg · recarga 7–10h",
-    "avista": "11.999,00",
-    "parcela": "123,47",
-    "parcelas": 18,
-    "img": "assets/img/promo-oek-tank-mwjdjjz208f4",
-    "ext": "webp",
-    "v": 1794840728378,
-    "ativo": true,
-    "studio": true
-  },
-  {
     "id": "redmi-17",
     "title": "Redmi 17",
     "specs": "128GB · 4GB RAM",
