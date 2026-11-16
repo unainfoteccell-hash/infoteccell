@@ -42,7 +42,7 @@
     cores: [{ nome: 'Preto', hex: '#111111' }, { nome: 'Gris Titânio', hex: '#9a9a9a' }, { nome: 'Roxo', hex: '#7c3aed' }],
     brindes: { ativo: true, itens: ['capinha', 'pelicula', 'fone'], custom: [] },
     avista: '1299,99', parcelas: 12, parcela: '123,47', taxa: '',
-    resumo: '128GB · 4GB RAM', resumoManual: false,
+    resumo: '128GB · 4GB RAM', resumoManual: false, moldura: false,
     zoom: 100, offX: 0, offY: 0, sombra: true
   });
   let S = defaults();
@@ -238,7 +238,7 @@
     cx.putImageData(im, 0, 0); return canvas;
   }
   async function setCutout(canvas) {
-    const t = trim(canvas); P.cut = await canvasToBlob(t, 'image/png'); P.img = await blobToImg(P.cut); updatePhotoUI(); redraw();
+    const t = trim(canvas); P.cut = await canvasToBlob(t, 'image/png'); P.img = await blobToImg(P.cut); S.moldura = false; updatePhotoUI(); redraw();
   }
   async function handleFoto(file) {
     if (!file) return;
@@ -315,7 +315,7 @@
     catch (e) { toast('Não consegui remover o fundo.', true); }
   });
   $('#btnOrig').addEventListener('click', async () => {
-    if (!P.work) return; P.cut = null; P.img = await blobToImg(await canvasToBlob(P.work, 'image/jpeg', .92)); updatePhotoUI(); redraw(); status('Usando a foto original (sem recorte).', 'done');
+    if (!P.work) return; P.cut = null; P.img = await blobToImg(await canvasToBlob(P.work, 'image/jpeg', .92)); S.moldura = true; updatePhotoUI(); redraw(); status('Usando a foto original em moldura (sem recorte).', 'done');
   });
 
   /* =========================================================
@@ -478,7 +478,7 @@
     if (!senha()) { pedirSenha('Digite a senha em “Acesso para publicar no site”.'); return; }
     const a = Arte.parseMoney(S.avista), p = Arte.parseMoney(S.parcela);
     if (!title(S) || title(S) === 'Promoção') { toast('Preencha o nome do produto.', true); return; }
-    if (isNaN(a) || isNaN(p)) { toast('Preencha o preço à vista e o valor da parcela.', true); return; }
+    if (isNaN(a) || (String(S.parcela || '').trim() && isNaN(p))) { toast('Confira o preço à vista e o valor da parcela.', true); return; }
     if (!P.img) { toast('Anexe a foto do produto antes de publicar.', true); return; }
     if (!confirm(`Publicar “${title(S)}” no site agora?\nEla aparece na seção “Ofertas” em cerca de 1 minuto.`)) return;
     publishing = true; $('#pubBtn').disabled = true;
@@ -488,7 +488,7 @@
       const art = await encodeArt(renderForm());
       S.siteId = S.siteId || `${slug(title(S))}-${uid()}`; await dbPut({ ...rec, siteId: S.siteId });
       toast('Publicando…');
-      const entry = { id: S.siteId, title: title(S), specs: S.resumo || '', avista: Arte.money(a).text, parcela: Arte.money(p).text, parcelas: S.parcelas, ext: art.ext };
+      const entry = { id: S.siteId, title: title(S), specs: S.resumo || '', avista: Arte.money(a).text, parcela: isNaN(p) ? '' : Arte.money(p).text, parcelas: S.parcelas, ext: art.ext };
       const rs = await api('publicar', { entry, imagens: { lg: await blobToB64(art.lg), sm: await blobToB64(art.sm) } });
       window.PROMOS_DATA = rs.lista; listSaved(); listPublished();
       toast('✅ Publicado! O site atualiza em cerca de 1 minuto.');
@@ -502,7 +502,7 @@
     box.innerHTML = arr.length ? arr.map(p => `
       <div class="pcard" data-id="${esc(p.id)}">
         <img src="${esc(p.img)}-sm.${esc(p.ext || 'webp')}${p.v ? '?v=' + p.v : ''}" alt="" loading="lazy">
-        <b>${esc(p.title)}</b><small>R$ ${esc(p.avista)} à vista · ${esc(p.parcelas || 12)}x R$ ${esc(p.parcela)}</small>
+        <b>${esc(p.title)}</b><small>R$ ${esc(p.avista)} à vista · ${p.parcela ? esc(p.parcelas || 12) + 'x R$ ' + esc(p.parcela) : 'até ' + esc(p.parcelas || 12) + 'x'}</small>
         <div class="acts"><button class="btn ghost sm" data-a="rm">Remover do site</button></div>
       </div>`).join('') : '<p class="empty">Nenhuma promoção publicada no site.</p>';
   }

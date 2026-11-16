@@ -305,7 +305,8 @@
   /* promoções (cards flutuantes) — vêm de data/promos.js (gerado pelo Estúdio: admin.html) */
   const PROMOS = (window.PROMOS_DATA || []).filter(p => p && p.ativo !== false).map(p => {
     const n = p.parcelas || 12;
-    return { ...p, cat: 'promo', parcelas: n, sub: `${p.specs ? p.specs + ' · ' : ''}${n}x de R$ ${p.parcela}`, price: `R$ ${p.avista} à vista` };
+    const tem = !!String(p.parcela || '').trim();
+    return { ...p, cat: 'promo', parcelas: n, temParcela: tem, parcTxt: tem ? `${n}x R$ ${p.parcela}` : `até ${n}x`, sub: `${p.specs ? p.specs + ' · ' : ''}${tem ? `${n}x de R$ ${p.parcela}` : `em até ${n}x`}`, price: `R$ ${p.avista} à vista` };
   });
   const imgBase = p => p.img || `assets/img/${p.id}`;
   const ver = p => (p.v ? '?v=' + p.v : '');
@@ -361,12 +362,12 @@
     <article class="fcard" style="--fd:${(i * -1.7).toFixed(1)}s;--dur:${(6 + (i % 3) * 1.1).toFixed(1)}s">
       <button class="fcard-media tilt" data-tilt data-idx="${i}" aria-label="Ampliar oferta ${p.title}">
         <img src="${sm(p)}" srcset="${sm(p)} 520w, ${lg(p)} 960w" sizes="(min-width:1100px) 380px,(min-width:760px) 40vw,76vw"
-             alt="Promoção ${p.title}: ${p.price}, ou ${p.parcelas}x de R$ ${p.parcela}" width="520" height="650" loading="lazy" decoding="async">
+             alt="Promoção ${p.title}: ${p.price}, ${p.temParcela ? `ou ${p.parcelas}x de R$ ${p.parcela}` : `em até ${p.parcelas}x`}" width="520" height="650" loading="lazy" decoding="async">
       </button>
       <div class="fcard-cap">
-        <div><b>${p.title}</b><small><span>R$ ${p.avista} à vista</span> <span>${p.parcelas}x R$ ${p.parcela}</span></small></div>
+        <div><b>${p.title}</b><small><span>R$ ${p.avista} à vista</span> <span>${p.parcTxt}</span></small></div>
         <a class="btn btn-wa btn-sm" data-wpp="online" href="#lojas"
-           data-msg="Olá! Vi no site da Infoteccell e quero o ${p.title} por R$ ${p.avista} à vista ou ${p.parcelas}x de R$ ${p.parcela}.">${waIcon}<span>Quero este</span></a>
+           data-msg="Olá! Vi no site da Infoteccell e quero o ${p.title} por R$ ${p.avista} à vista${p.temParcela ? ` ou ${p.parcelas}x de R$ ${p.parcela}` : ` (ou em até ${p.parcelas}x)`}.">${waIcon}<span>Quero este</span></a>
       </div>
     </article>`).join('');
   promoGrid.addEventListener('click', e => {

@@ -231,6 +231,14 @@
     const sc = Math.min(box.w / img.width, box.h / img.height) * zoom;
     const dw = img.width * sc, dh = img.height * sc;
     const cx = box.x + box.w / 2 + (f.offX || 0), bottom = box.y + box.h + (f.offY || 0);
+    if (f.moldura) { // foto inteira (com fundo) dentro de uma moldura arredondada
+      const mf = .92, mw = dw * mf, mh = dh * mf, x0 = cx - mw / 2, y0 = bottom - mh;
+      c.save(); c.shadowColor = 'rgba(10,40,120,.35)'; c.shadowBlur = 28; c.shadowOffsetY = 12;
+      rrPath(c, x0, y0, mw, mh, 34); c.fillStyle = '#fff'; c.fill(); c.restore();
+      c.save(); rrPath(c, x0, y0, mw, mh, 34); c.clip(); c.drawImage(img, x0, y0, mw, mh); c.restore();
+      rrPath(c, x0, y0, mw, mh, 34); c.lineWidth = 6; c.strokeStyle = '#2f98ff'; c.stroke();
+      return;
+    }
     if (f.sombra !== false) {
       c.save(); c.translate(cx, bottom + 4); c.scale(1, .1);
       const g = c.createRadialGradient(0, 0, 0, 0, 0, dw * .5);

@@ -90,8 +90,9 @@ function validarEntrada(e) {
   const id = texto(e.id, 90);
   if (!/^[a-z0-9][a-z0-9-]{2,88}$/.test(id)) throw new Error('Identificador inválido');
   const titulo = texto(e.title, 80); if (!titulo) throw new Error('Informe o nome do produto');
-  const avista = texto(e.avista, 14), parcela = texto(e.parcela, 14);
-  if (!/^\d{1,3}(\.\d{3})*,\d{2}$/.test(avista) || !/^\d{1,3}(\.\d{3})*,\d{2}$/.test(parcela)) throw new Error('Preço em formato inválido');
+  const avista = texto(e.avista, 14), parcela = texto(e.parcela || '', 14);
+  const fmt = /^\d{1,3}(\.\d{3})*,\d{2}$/;
+  if (!fmt.test(avista) || (parcela && !fmt.test(parcela))) throw new Error('Preço em formato inválido');
   const parcelas = Number(e.parcelas); if (!Number.isInteger(parcelas) || parcelas < 1 || parcelas > 24) throw new Error('Número de parcelas inválido');
   const ext = e.ext === 'jpg' ? 'jpg' : 'webp';
   return { id, title: titulo, specs: texto(e.specs || '', 90), avista, parcela, parcelas, ext };
