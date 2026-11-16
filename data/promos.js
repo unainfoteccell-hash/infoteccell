@@ -2,14 +2,14 @@
 window.PROMOS_DATA = [
   {
     "id": "oek-tank-mwjdjjz208f4",
-    "title": "MOTO HARLEY",
-    "specs": "32 km/h · autonomia de 30–35 km",
-    "avista": "8.799,99",
+    "title": "OEK TANK",
+    "specs": "1000W · 32 km/h · 48V 23Ah · 40–55 km · suporta 120 kg · recarga 7–10h",
+    "avista": "11.999,00",
     "parcela": "123,47",
     "parcelas": 18,
     "img": "assets/img/promo-oek-tank-mwjdjjz208f4",
     "ext": "webp",
-    "v": 1794840443931,
+    "v": 1794840728378,
     "ativo": true,
     "studio": true
   },
