@@ -1,6 +1,45 @@
 /* Gerado pelo Estúdio de Promoções (admin.html). Pode editar à mão se precisar. */
 window.PROMOS_DATA = [
   {
+    "id": "oek-tank-1000w",
+    "title": "OEK TANK 1000W",
+    "specs": "Scooter elétrica · 50 à 55km · 32km/h",
+    "avista": "11.999,00",
+    "parcela": "",
+    "parcelas": 18,
+    "img": "assets/img/promo-oek-tank-1000w",
+    "ext": "webp",
+    "v": 1794853802938,
+    "ativo": true,
+    "studio": true
+  },
+  {
+    "id": "motinha-eletrica-harley",
+    "title": "Motinha Elétrica Harley",
+    "specs": "30 à 35km · 32km/h",
+    "avista": "8.799,99",
+    "parcela": "",
+    "parcelas": 18,
+    "img": "assets/img/promo-motinha-eletrica-harley",
+    "ext": "webp",
+    "v": 1794853803158,
+    "ativo": true,
+    "studio": true
+  },
+  {
+    "id": "dedy-sl01-triciclo-eletrico",
+    "title": "DEDY SL01 · Triciclo Elétrico",
+    "specs": "1000W · 32km/h · 70 a 80km",
+    "avista": "8.299,90",
+    "parcela": "",
+    "parcelas": 18,
+    "img": "assets/img/promo-dedy-sl01-triciclo-eletrico",
+    "ext": "webp",
+    "v": 1794853803440,
+    "ativo": true,
+    "studio": true
+  },
+  {
     "id": "redmi-17",
     "title": "Redmi 17",
     "specs": "128GB · 4GB RAM",
