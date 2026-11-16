@@ -209,6 +209,34 @@
     const out = document.createElement('canvas'); out.width = x1 - x0 + 1; out.height = y1 - y0 + 1;
     out.getContext('2d').drawImage(canvas, x0, y0, out.width, out.height, 0, 0, out.width, out.height); return out;
   }
+  /* remove respingos soltos (pedaços de parede/chão que a IA deixa): mantém só as partes grandes do produto */
+  function cleanSpecks(canvas) {
+    const w = canvas.width, h = canvas.height, cx = canvas.getContext('2d'), im = cx.getImageData(0, 0, w, h), d = im.data, N = w * h;
+    const lab = new Int32Array(N), st = new Int32Array(N), areas = [0]; let nl = 0;
+    for (let s = 0; s < N; s++) {
+      if (lab[s] || d[s * 4 + 3] <= 24) continue;
+      nl++; let sp = 0, area = 0; st[sp++] = s; lab[s] = nl;
+      while (sp) {
+        const i = st[--sp]; area++; const px = i % w;
+        let k;
+        if (px > 0) { k = i - 1; if (!lab[k] && d[k * 4 + 3] > 24) { lab[k] = nl; st[sp++] = k; } }
+        if (px < w - 1) { k = i + 1; if (!lab[k] && d[k * 4 + 3] > 24) { lab[k] = nl; st[sp++] = k; } }
+        if (i >= w) { k = i - w; if (!lab[k] && d[k * 4 + 3] > 24) { lab[k] = nl; st[sp++] = k; } }
+        if (i < N - w) { k = i + w; if (!lab[k] && d[k * 4 + 3] > 24) { lab[k] = nl; st[sp++] = k; } }
+      }
+      areas[nl] = area;
+    }
+    if (!nl) return canvas;
+    const max = Math.max(...areas);
+    const m1 = new Uint8Array(N);
+    for (let i = 0; i < N; i++) if (lab[i] && areas[lab[i]] >= max * 0.012) m1[i] = 1;
+    // dilata 3px para preservar a borda suave do produto
+    const R = 3, m2 = new Uint8Array(N), m3 = new Uint8Array(N);
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { let v = 0; for (let k = -R; k <= R && !v; k++) { const xx = x + k; if (xx >= 0 && xx < w && m1[y * w + xx]) v = 1; } m2[y * w + x] = v; }
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { let v = 0; for (let k = -R; k <= R && !v; k++) { const yy = y + k; if (yy >= 0 && yy < h && m2[yy * w + x]) v = 1; } m3[y * w + x] = v; }
+    for (let i = 0; i < N; i++) if (!m3[i]) d[i * 4 + 3] = 0;
+    cx.putImageData(im, 0, 0); return canvas;
+  }
   async function setCutout(canvas) {
     const t = trim(canvas); P.cut = await canvasToBlob(t, 'image/png'); P.img = await blobToImg(P.cut); updatePhotoUI(); redraw();
   }
@@ -241,14 +269,14 @@
       const input = await canvasToBlob(P.work, 'image/png');
       let fetched = 0;
       const out = await lib.removeBackground(input, {
-        model: 'isnet_quint8', output: { format: 'image/png' },
+        model: $('#bgFast').checked ? 'isnet_quint8' : 'isnet_fp16', output: { format: 'image/png' },
         progress: (key, cur, tot) => {
-          if (String(key).startsWith('fetch') && tot) { fetched = cur / tot; status(`Baixando o modelo de recorte… ${Math.round(fetched * 100)}% (só na 1ª vez)`, 'pct', fetched * 100); }
+          if (String(key).startsWith('fetch') && tot) { fetched = cur / tot; status(`Baixando o modelo de recorte… ${Math.round(fetched * 100)}% (só na 1ª vez neste aparelho)`, 'pct', fetched * 100); }
           else if (String(key).startsWith('compute')) status('Recortando o produto… (pode levar alguns segundos)', 'ind');
         }
       });
       const im = await blobToImg(out), c = document.createElement('canvas'); c.width = im.naturalWidth; c.height = im.naturalHeight;
-      c.getContext('2d').drawImage(im, 0, 0); await setCutout(c);
+      c.getContext('2d').drawImage(im, 0, 0); await setCutout(cleanSpecks(c));
       status('Fundo removido ✔ — se ficou algo estranho, ajuste o tamanho/posição ou tente “Fundo liso”.', 'done');
     } catch (e) {
       console.error(e); bgLib = null;
@@ -311,7 +339,7 @@
     const a = Arte.parseMoney(S.avista), p = Arte.parseMoney(S.parcela);
     const L = [`🔥 ${(S.nome1 + ' ' + S.nome2).trim()}${S.subtitulo ? ' — ' + S.subtitulo : ''}`];
     if (S.resumo) L.push(`📱 ${S.resumo}`);
-    if (!isNaN(a)) L.push(`💰 R$ ${Arte.money(a).text} à vista` + (!isNaN(p) ? ` ou ${S.parcelas}x de R$ ${Arte.money(p).text}` : ''));
+    if (!isNaN(a)) L.push(`💰 R$ ${Arte.money(a).text} à vista` + (!isNaN(p) ? ` ou ${S.parcelas}x de R$ ${Arte.money(p).text}` : ` — dividimos em até ${S.parcelas}x`));
     const br = Arte.brindeList(S).map(b => b.tipo === 'custom' ? b.texto : ({ capinha: 'capinha', pelicula: 'película', fone: 'fone de ouvido' })[b.tipo]);
     if (br.length) L.push(`🎁 E ainda ganha: ${br.join(', ')}!`);
     const o = CFG.VENDAS_ONLINE;

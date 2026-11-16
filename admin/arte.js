@@ -339,6 +339,17 @@
     setFont(c, 700, fs); c.fillText(texto, x + w / 2, y + h - 23);
   }
 
+  /* caixa "DIVIDIMOS EM ATÉ 18x" (quando não há valor de parcela) */
+  function drawParcelasBox(c, x, y, w, h, n) {
+    c.save(); c.shadowColor = 'rgba(20,130,255,.7)'; c.shadowBlur = 22;
+    const g = c.createLinearGradient(0, y, 0, y + h); g.addColorStop(0, '#0d47cb'); g.addColorStop(1, '#052a88');
+    rrPath(c, x, y, w, h, 46); c.fillStyle = g; c.fill(); c.restore();
+    rrPath(c, x, y, w, h, 46); c.lineWidth = 6; c.strokeStyle = '#2b9cff'; c.stroke();
+    c.fillStyle = '#fff'; c.textAlign = 'left'; c.textBaseline = 'alphabetic';
+    setFont(c, 800, 27); spaced(c, 'DIVIDIMOS EM ATÉ:', x + 46, y + 56, 1.5, 'left');
+    const s = fitSize(c, n + 'x', 800, 104, w - 90, F_MAIN, 40);
+    c.fillStyle = '#1fd0ff'; setFont(c, 800, s); c.fillText(n + 'x', x + 44, y + h - 34);
+  }
   function drawPriceBox(c, x, y, w, h, label, m, color) {
     c.save(); c.shadowColor = 'rgba(20,130,255,.7)'; c.shadowBlur = 22;
     const g = c.createLinearGradient(0, y, 0, y + h); g.addColorStop(0, '#0d47cb'); g.addColorStop(1, '#052a88');
@@ -402,7 +413,8 @@
     const avista = parseMoney(f.avista), parc = parseMoney(f.parcela);
     const n = f.parcelas || 12;
     drawPriceBox(c, 104, pTop, 488, 182, 'À VISTA:', isNaN(avista) ? { int: '0', cents: '00' } : money(avista), '#ffffff');
-    drawPriceBox(c, 600, pTop, 416, 182, `OU ${n}x DE:`, isNaN(parc) ? { int: '0', cents: '00' } : money(parc), '#1fd0ff');
+    if (isNaN(parc) || !String(f.parcela || '').trim()) drawParcelasBox(c, 600, pTop, 416, 182, n);
+    else drawPriceBox(c, 600, pTop, 416, 182, `OU ${n}x DE:`, money(parc), '#1fd0ff');
     return canvas;
   }
 

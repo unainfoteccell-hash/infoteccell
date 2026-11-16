@@ -65,6 +65,7 @@
         </div>
       </label>
       <label class="check"><input type="checkbox" id="autoBg" checked> Remover o fundo automaticamente ao anexar</label>
+      <label class="check"><input type="checkbox" id="bgFast"> Modo rápido <em>(download menor, recorte menos preciso)</em></label>
       <div class="btn-row">
         <button class="btn primary sm" id="btnAuto" type="button" disabled>✨ Remover fundo (IA)</button>
         <button class="btn ghost sm" id="btnLiso" type="button" disabled>Fundo liso (rápido)</button>
@@ -72,7 +73,7 @@
       </div>
       <label class="range" id="tolWrap">Tolerância do fundo liso <input type="range" id="tol" min="8" max="90" value="38"></label>
       <div class="status" id="bgStatus" hidden><div class="bar"><i id="bgBar"></i></div><span id="bgMsg"></span></div>
-      <p class="mini" id="bgHelp">A remoção por IA roda no seu aparelho (a foto não é enviada a ninguém). Na primeira vez baixa um modelo de ~45 MB e leva cerca de 30 segundos; depois fica mais rápido.</p>
+      <p class="mini" id="bgHelp">A remoção por IA roda no seu aparelho (a foto não é enviada a ninguém). Na primeira vez neste aparelho baixa o modelo de recorte (~85 MB no modo normal, ~42 MB no modo rápido) e leva cerca de 30 segundos; depois fica bem mais rápido. Prefira usar com Wi-Fi.</p>
       <div class="sliders">
         <label class="range">Tamanho <output id="zoomV">100%</output><input type="range" id="zoom" min="40" max="220" value="100"></label>
         <label class="range">Mover ← → <input type="range" id="offX" min="-320" max="320" value="0"></label>
@@ -116,7 +117,7 @@
         </label>
       </div>
       <div class="grid2">
-        <label>Valor da parcela (R$)<input id="parcela" inputmode="decimal" placeholder="123,47" autocomplete="off"></label>
+        <label>Valor da parcela (R$) <em>(vazio = “dividimos em até Nx”)</em><input id="parcela" inputmode="decimal" placeholder="123,47" autocomplete="off"></label>
         <label>Calcular com taxa % <em>(opcional)</em><input id="taxa" inputmode="decimal" placeholder="14,2" autocomplete="off"></label>
       </div>
       <p class="mini" id="hintParc"></p>
