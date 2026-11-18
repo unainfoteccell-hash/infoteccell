@@ -1,6 +1,19 @@
 /* Gerado pelo Estúdio de Promoções (admin.html). Pode editar à mão se precisar. */
 window.PROMOS_DATA = [
   {
+    "id": "hotwav-a18-pro-max-mwmbrqlyyfyc",
+    "title": "Hotwav  A18 Pro Max",
+    "specs": "128GB memória · 6GB RAM",
+    "avista": "1.299,90",
+    "parcela": "",
+    "parcelas": 18,
+    "img": "assets/img/promo-hotwav-a18-pro-max-mwmbrqlyyfyc",
+    "ext": "webp",
+    "v": 1795018676045,
+    "ativo": true,
+    "studio": true
+  },
+  {
     "id": "oek-tank-1000w",
     "title": "OEK TANK 1000W",
     "specs": "Scooter elétrica · 50 à 55km · 32km/h",
