@@ -86,17 +86,6 @@ window.PROMOS_DATA = [
     "ativo": true
   },
   {
-    "id": "moto-g06",
-    "title": "Moto G06",
-    "specs": "128GB · 4GB RAM",
-    "avista": "900,00",
-    "parcela": "85,62",
-    "parcelas": 12,
-    "img": "assets/img/moto-g06",
-    "ext": "webp",
-    "ativo": true
-  },
-  {
     "id": "oek-m7",
     "title": "OEK M7",
     "specs": "Motinha elétrica · 30 à 35km · 32km/h",
