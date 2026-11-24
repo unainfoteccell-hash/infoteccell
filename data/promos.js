@@ -64,17 +64,6 @@ window.PROMOS_DATA = [
     "ativo": true
   },
   {
-    "id": "galaxy-a07",
-    "title": "Samsung Galaxy A07",
-    "specs": "128GB · 4GB RAM",
-    "avista": "899,00",
-    "parcela": "83,34",
-    "parcelas": 12,
-    "img": "assets/img/galaxy-a07",
-    "ext": "webp",
-    "ativo": true
-  },
-  {
     "id": "realme-c71",
     "title": "realme C71 NFC",
     "specs": "128GB · 4GB RAM · NFC",
