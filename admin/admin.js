@@ -502,7 +502,7 @@
     box.innerHTML = arr.length ? arr.map(p => `
       <div class="pcard" data-id="${esc(p.id)}">
         <img src="${esc(p.img)}-sm.${esc(p.ext || 'webp')}${p.v ? '?v=' + p.v : ''}" alt="" loading="lazy">
-        <b>${esc(p.title)}</b><small>R$ ${esc(p.avista)} à vista · ${p.parcela ? esc(p.parcelas || 12) + 'x R$ ' + esc(p.parcela) : 'até ' + esc(p.parcelas || 12) + 'x'}</small>
+        <b>${esc(p.title)}</b><small>R$ ${esc(p.avista)} à vista${p.parcela ? ' · ' + esc(p.parcelas || 12) + 'x R$ ' + esc(p.parcela) : (p.parcelas > 0 ? ' · até ' + esc(p.parcelas) + 'x' : '')}</small>
         <div class="acts"><button class="btn ghost sm" data-a="rm">Remover do site</button></div>
       </div>`).join('') : '<p class="empty">Nenhuma promoção publicada no site.</p>';
   }
